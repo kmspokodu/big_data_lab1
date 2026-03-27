@@ -88,9 +88,6 @@ pipeline {
     }
 
     post {
-        always {
-            cleanWs()
-        }
         success {
             echo '✓ CI Pipeline completed successfully'
         }

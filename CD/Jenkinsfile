@@ -92,11 +92,6 @@ pipeline {
     }
 
     post {
-        always {
-            sh '''
-                docker logout || true
-            '''
-        }
         success {
             echo '✓ CD Pipeline completed successfully - Application deployed'
         }
