@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_REPO = "kmspokodu/mle-template"
+        IMAGE_REPO = "andrey2203/mle-template"
         IMAGE_TAG = "latest"
         PATH = "/Applications/Docker.app/Contents/Resources/bin:$PATH"
         DOCKER_CREDENTIALS = credentials('dockerhub-credentials')
