@@ -33,15 +33,13 @@ pipeline {
         stage('Deploy Container') {
             steps {
                 sh '''
-                    # Stop old container if exists
                     docker stop mle-template || true
                     docker rm mle-template || true
                     
-                    # Run new container
-                    docker run -d \\
-                        --name mle-template \\
-                        -p 5556:5556 \\
-                        -e LOG_LEVEL=INFO \\
+                    docker run -d \
+                        --name mle-template \
+                        -p 5556:5556 \
+                        -e LOG_LEVEL=INFO \
                         ${IMAGE_REPO}:${IMAGE_TAG}
                     
                     echo "✓ Container deployed successfully"
@@ -63,10 +61,10 @@ pipeline {
 
     post {
         success {
-            echo '✓ CD Pipeline completed successfully - Application deployed'
+            echo '✓ CD Pipeline completed successfully - Application deployed on port 5556'
         }
         failure {
-            echo '✗ CD Pipeline failed - Check logs and rollback if needed'
+            echo '✗ CD Pipeline failed - Check logs'
             script {
                 sh '''
                     docker logs mle-template || echo "No container logs available"
