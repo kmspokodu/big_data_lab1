@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_REPO = "kmspokodu/mle-template"
         IMAGE_TAG = "latest"
+        PATH = "/Applications/Docker.app/Contents/Resources/bin:$PATH"
     }
 
     options {
