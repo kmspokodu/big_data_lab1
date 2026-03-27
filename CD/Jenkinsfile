@@ -5,6 +5,7 @@ pipeline {
         IMAGE_REPO = "kmspokodu/mle-template"
         IMAGE_TAG = "latest"
         PATH = "/Applications/Docker.app/Contents/Resources/bin:$PATH"
+        DOCKER_CREDENTIALS = credentials('dockerhub-credentials')
     }
 
     options {
@@ -27,6 +28,19 @@ pipeline {
                 sh '''
                     docker build -t ${IMAGE_REPO}:${IMAGE_TAG} .
                     docker tag ${IMAGE_REPO}:${IMAGE_TAG} ${IMAGE_REPO}:latest
+                '''
+            }
+        }
+
+        stage('Push to DockerHub') {
+            steps {
+                sh '''
+                    echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin
+                    echo "Pushing image to DockerHub..."
+                    docker push ${IMAGE_REPO}:${IMAGE_TAG}
+                    docker push ${IMAGE_REPO}:latest
+                    docker logout
+                    echo "✓ Image pushed successfully"
                 '''
             }
         }
