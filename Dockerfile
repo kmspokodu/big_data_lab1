@@ -3,11 +3,12 @@ FROM python:3.10-slim
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
-    LOG_LEVEL=INFO
+    LOG_LEVEL=INFO \
+    RUN_MODE=api
 
 WORKDIR /app
 
-# Копируем requirements первым для лучшего кэширования слоев
+# Копируем requirements 
 COPY requirements.txt .
 
 # Обновляем pip и устанавливаем зависимости
@@ -27,5 +28,5 @@ RUN chmod +x src/*.py
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import os; assert os.path.isfile('experiments/log_reg.sav'), 'Model not found'" || exit 1
 
-# Запуск pipeline
-CMD ["bash", "-c", "python src/preprocess.py && python src/train.py && python src/predict.py -m LOG_REG -t smoke"]
+# Use an entrypoint script to decide what to run
+ENTRYPOINT ["bash", "-c", "if [ \"$RUN_MODE\" = \"pipeline\" ]; then python src/preprocess.py && python src/train.py && python src/predict.py -m LOG_REG -t smoke; else python src/api.py; fi"]
