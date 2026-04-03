@@ -12,7 +12,7 @@ from logger import Logger
 
 SHOW_LOG = True
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 CORS(app)
 
 logger = Logger(SHOW_LOG)
@@ -40,6 +40,10 @@ def load_model():
         log.error(f"Failed to load model: {traceback.format_exc()}")
         return False
 
+
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
 
 @app.route('/health', methods=['GET'])
 def health():
@@ -111,6 +115,29 @@ def predict():
         log.error(f"Prediction error: {traceback.format_exc()}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/v1/prompt', methods=['POST'])
+def prompt():
+    data = request.get_json()
+    text = data.get("prompt", "")
+
+    try:
+        arr = [float(x.strip()) for x in text.split(',')]
+
+        if len(arr) != 60:
+            return jsonify({'error': 'Expected 60 numbers'}), 400
+
+        features = np.array(arr).reshape(1, -1)
+
+        prediction = classifier.predict(features)[0]
+        prob = classifier.predict_proba(features)[0]
+
+        return jsonify({
+            'prediction': prediction,
+            'probabilities': prob.tolist()
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 
 @app.route('/api/v1/predict/sonar', methods=['POST'])
 def predict_sonar():
@@ -229,23 +256,6 @@ def batch_predict():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/', methods=['GET'])
-def root():
-    """Root endpoint с информацией об API"""
-    return jsonify({
-        'name': 'Sonar Classification API',
-        'version': '1.0.0',
-        'description': 'ML API для классификации Sonar данных (Mine vs Rock)',
-        'endpoints': {
-            'GET /health': 'Health check',
-            'GET /api/v1/model-info': 'Информация о модели',
-            'POST /api/v1/predict': 'Предсказание (массив features)',
-            'POST /api/v1/predict/sonar': 'Предсказание (dict с feature_0...feature_59)',
-            'POST /api/v1/batch-predict': 'Batch предсказание (CSV или JSON)'
-        }
-    }), 200
-
-
 @app.errorhandler(404)
 def not_found(e):
     return jsonify({'error': 'Endpoint not found'}), 404
@@ -256,9 +266,12 @@ def internal_error(e):
     return jsonify({'error': 'Internal server error'}), 500
 
 
+# Debugging: Print all available routes
+print(app.url_map)
+
 if __name__ == '__main__':
     if not load_model():
         log.warning("Starting without model - predictions will fail until model is loaded")
     
-    log.info("Starting Flask API on 0.0.0.0:5556")
-    app.run(host='0.0.0.0', port=5556, debug=False)
+    log.info("Starting Flask API on 0.0.0.0:55566")
+    app.run(host='0.0.0.0', port=55566, debug=False)
