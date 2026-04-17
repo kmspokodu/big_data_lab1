@@ -44,7 +44,8 @@ docker build -t big_data_lab1:latest .
 docker run -d -p 8000:8000 big_data_lab1:latest
 ```
 3. Получите доступ к API для предсказания классов на новых данных:
-```bashcurl -X POST -F 'file=@new_data.csv' http://localhost:8000/predict
+```
+curl -X POST -F 'file=@new_data.csv' http://localhost:8000/predict
 ```
 ## CI/CD
 Для автоматизации процесса разработки и развертывания модели используются Jenkins пайплайны для CI и CD. Пайплайн CI выполняет следующие шаги:
