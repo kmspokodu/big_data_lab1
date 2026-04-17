@@ -14,13 +14,16 @@ pip install -r requirements.txt
 ```
 ## Использование
 1. Запустите скрипт для обучения модели:
-```python train.py
+```
+python train.py
 ```
 2. Запустите скрипт для оценки модели:
-```python evaluate.py
+```
+python evaluate.py
 ```
 3. Запустите скрипт для предсказания классов на новых данных:
-```python predict.py --input new_data.csv --output predictions.csv
+```
+python predict.py --input new_data.csv --output predictions.csv
 ```
 ## Структура проекта
 - 'notebooks/' - директория для хранения Jupyter ноутбуков с экспериментами и анализом данных
