@@ -17,9 +17,9 @@ pip install -r requirements.txt
 ```
 python train.py
 ```
-2. Запустите скрипт для оценки модели:
+2. Запустите скрипт для запуска API:
 ```
-python evaluate.py
+python api.py
 ```
 3. Запустите скрипт для предсказания классов на новых данных:
 ```
